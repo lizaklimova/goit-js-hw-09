@@ -1,3 +1,4 @@
+import Notiflix from 'notiflix';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -12,9 +13,13 @@ const refs = {
 refs.btnRef.disabled = true;
 refs.btnRef.addEventListener('click', onStartClick);
 
+//к-ть мс, які обирає юзер
 let selectedMs = 0;
+//різниця між обраним часом користувача і теперешнім(мс)
 let userDate = 0;
+//айді інтервала
 let startId;
+//переформатований обʼєкт {days: 09...}
 let padStartedTime;
 
 const options = {
@@ -26,7 +31,9 @@ const options = {
   onClose(selectedDates) {
     selectedMs = new Date(selectedDates[0]).getTime();
     if (new Date() > selectedMs) {
-      alert('Please choose a date in the future');
+      Notiflix.Notify.failure('Please choose a date in the future', {
+        timeout: 3000,
+      });
     } else {
       refs.btnRef.disabled = false;
     }
@@ -40,21 +47,33 @@ function onStartClick() {
     userDate = selectedMs - new Date();
 
     padStartedTime = addLeadingZero(userDate);
+
+    if (
+      Number(padStartedTime.days) <= 0 &&
+      Number(padStartedTime.hours) <= 0 &&
+      Number(padStartedTime.minutes) <= 0 &&
+      Number(padStartedTime.seconds) <= 0
+    ) {
+      Notiflix.Notify.info('Time is over!!!', { timeout: 3000 });
+      clearInterval(startId);
+    }
+
     refs.days.textContent = padStartedTime.days;
     refs.hours.textContent = padStartedTime.hours;
     refs.minutes.textContent = padStartedTime.minutes;
     refs.seconds.textContent = padStartedTime.seconds;
-    if (userDate <= 0) {
-      clearInterval(startId);
-    }
   }, 1000);
 }
 
 function addLeadingZero(value) {
+  //скільки днів, год, с, мс в заг. к-ті мс юзера
   const convertedMs = convertMs(value);
+
+  //перебираємо ключі обʼєкта, щоб до значень з 1 символом додати 0
   Object.keys(convertedMs).forEach(key => {
     convertedMs[key] = convertedMs[key].toString().padStart(2, '0');
   });
+
   return convertedMs;
 }
 
