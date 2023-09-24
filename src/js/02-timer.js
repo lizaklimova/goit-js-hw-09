@@ -1,5 +1,6 @@
 import Notiflix from 'notiflix';
 import flatpickr from 'flatpickr';
+require('flatpickr/dist/themes/material_blue.css');
 import 'flatpickr/dist/flatpickr.min.css';
 
 const refs = {
@@ -30,6 +31,7 @@ const options = {
 
   onClose(selectedDates) {
     selectedMs = new Date(selectedDates[0]).getTime();
+
     if (new Date() > selectedMs) {
       Notiflix.Notify.failure('Please choose a date in the future', {
         timeout: 3000,
@@ -47,6 +49,15 @@ function onStartClick() {
     userDate = selectedMs - new Date();
 
     padStartedTime = addLeadingZero(userDate);
+
+    const isTenSecondsLeft = Number(padStartedTime.seconds) <= 10;
+
+    if (isTenSecondsLeft) {
+      refs.days.style.color = 'red';
+      refs.hours.style.color = 'red';
+      refs.minutes.style.color = 'red';
+      refs.seconds.style.color = 'red';
+    }
 
     if (
       Number(padStartedTime.days) <= 0 &&
