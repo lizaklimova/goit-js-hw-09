@@ -38,11 +38,12 @@ function onSubmitHandler(event) {
   if (btnRef.textContent === 'Logout') {
     removeLC(KEY_LC);
     btnRef.textContent = 'Login';
-    formRef.reset();
+    event.currentTarget.reset();
     enableFormInputs(formRef);
-  }
-
-  if (USER_DATA.email === obj.email && USER_DATA.password === obj.password) {
+  } else if (
+    USER_DATA.email === obj.email &&
+    USER_DATA.password === obj.password
+  ) {
     setLC(obj);
     btnRef.textContent = 'Logout';
     disableFormInputs(formRef);
@@ -50,6 +51,7 @@ function onSubmitHandler(event) {
     alert('error! wrong password or email!');
   }
 }
+
 function setLC(data) {
   localStorage.setItem(KEY_LC, JSON.stringify(data));
 }
