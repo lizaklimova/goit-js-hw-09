@@ -1,29 +1,32 @@
-const refs = {
-  body: document.querySelector('body'),
-  start: document.querySelector('button[data-start]'),
-  stop: document.querySelector('button[data-stop]'),
-};
+const bodyRef = document.querySelector('body');
+const startBtnRef = document.querySelector('button[data-start]');
+const stopBtnRef = document.querySelector('button[data-stop]');
 
 let id = null;
 
-refs.start.addEventListener('click', onStartClick);
-refs.stop.addEventListener('click', onStopClick);
+startBtnRef.addEventListener('click', onStartClick);
+stopBtnRef.addEventListener('click', onStopClick);
+
 function onStartClick() {
   id = setInterval(() => {
-    refs.stop.disabled = false;
-    refs.start.disabled = true;
-    refs.body.style.backgroundColor = getRandomHexColor();
+    disableButton(stopBtnRef, false);
+    disableButton(startBtnRef, !false);
+    bodyRef.style.backgroundColor = getRandomHexColor();
   }, 1000);
 }
 
 function onStopClick() {
   clearInterval(id);
-  refs.start.disabled = false;
-  refs.stop.disabled = true;
+  disableButton(startBtnRef, false);
+  disableButton(stopBtnRef, !false);
 }
 
 function getRandomHexColor() {
   return `#${Math.floor(Math.random() * 16777215)
     .toString(16)
     .padStart(6, 0)}`;
+}
+
+function disableButton(el, value) {
+  el.disabled = value;
 }

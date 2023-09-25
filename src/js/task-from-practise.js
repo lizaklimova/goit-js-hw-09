@@ -39,14 +39,14 @@ function onSubmitHandler(event) {
     removeLC(KEY_LC);
     btnRef.textContent = 'Login';
     event.currentTarget.reset();
-    enableFormInputs(formRef);
+    disableFormInputs(formRef, false);
   } else if (
     USER_DATA.email === obj.email &&
     USER_DATA.password === obj.password
   ) {
     setLC(obj);
     btnRef.textContent = 'Logout';
-    disableFormInputs(formRef);
+    disableFormInputs(formRef, !false);
   } else {
     alert('error! wrong password or email!');
   }
@@ -60,18 +60,10 @@ function removeLC(key) {
   localStorage.removeItem(key);
 }
 
-function disableFormInputs(form) {
+function disableFormInputs(form, value) {
   [...form.elements].forEach(el => {
     if (el.tagName.toUpperCase() !== 'BUTTON') {
-      el.disabled = true;
-    }
-  });
-}
-
-function enableFormInputs(form) {
-  [...form.elements].forEach(el => {
-    if (el.tagName.toUpperCase() !== 'BUTTON') {
-      el.disabled = false;
+      el.disabled = value;
     }
   });
 }

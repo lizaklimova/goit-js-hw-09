@@ -29,15 +29,16 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
 
-  onClose(selectedDates) {
-    selectedMs = new Date(selectedDates[0]).getTime();
+  onClose({ 0: ms }) {
+    selectedMs = ms.getTime();
 
-    if (new Date() > selectedMs) {
+    if (Date.now() > selectedMs) {
+      disableButton(!false);
       Notiflix.Notify.failure('Please choose a date in the future', {
         timeout: 3000,
       });
     } else {
-      refs.btnRef.disabled = false;
+      disableButton(false);
     }
   },
 };
@@ -46,34 +47,38 @@ const fpr = flatpickr('#datetime-picker', options);
 
 function onStartClick() {
   startId = setInterval(() => {
-    userDate = selectedMs - new Date();
+    userDate = selectedMs - Date.now();
 
     padStartedTime = addLeadingZero(userDate);
 
-    const isTenSecondsLeft = Number(padStartedTime.seconds) <= 10;
-
-    if (isTenSecondsLeft) {
-      refs.days.style.color = 'red';
-      refs.hours.style.color = 'red';
-      refs.minutes.style.color = 'red';
-      refs.seconds.style.color = 'red';
-    }
-
-    if (
-      Number(padStartedTime.days) <= 0 &&
-      Number(padStartedTime.hours) <= 0 &&
-      Number(padStartedTime.minutes) <= 0 &&
-      Number(padStartedTime.seconds) <= 0
-    ) {
+    checkTimeLeft();
+    if (userDate < 1000) {
       Notiflix.Notify.info('Time is over!!!', { timeout: 3000 });
       clearInterval(startId);
     }
 
-    refs.days.textContent = padStartedTime.days;
-    refs.hours.textContent = padStartedTime.hours;
-    refs.minutes.textContent = padStartedTime.minutes;
-    refs.seconds.textContent = padStartedTime.seconds;
+    changeTextContent();
   }, 1000);
+}
+
+function changeTextContent() {
+  refs.days.textContent = padStartedTime.days;
+  refs.hours.textContent = padStartedTime.hours;
+  refs.minutes.textContent = padStartedTime.minutes;
+  refs.seconds.textContent = padStartedTime.seconds;
+}
+
+// перевірка чи залишилось 10 сек
+function checkTimeLeft() {
+  const isTenSecondsLeft = Number(padStartedTime.seconds) <= 10;
+
+  if (isTenSecondsLeft) {
+    Object.values(refs).forEach(el => {
+      if (el.tagName.toUpperCase() !== 'BUTTON') {
+        el.style.color = 'red';
+      }
+    });
+  }
 }
 
 function addLeadingZero(value) {
@@ -103,4 +108,8 @@ function convertMs(ms) {
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
   return { days, hours, minutes, seconds };
+}
+
+function disableButton(value) {
+  refs.btnRef.disabled = value;
 }
